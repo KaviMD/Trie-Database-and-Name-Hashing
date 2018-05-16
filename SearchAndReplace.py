@@ -2,6 +2,7 @@
 import hashlib
 import csv
 import re
+from Trie import TrieDatabase
 
 # Function to hash a string
 def hash(string):
@@ -18,6 +19,20 @@ def connectList(words):
 		string = string + words[i] +' '
 	return string[:-1]
 
+# !!!SLOW!!! Function to search a string for names and replace them with hashed versions of those names
+def searchAndReplaceSlow(string):
+	word_list = splitString(string)
+
+	item_num = 0
+	for item in word_list:
+		#print item	
+		if str(item).lower() in names:
+			#print item
+			word_list[item_num] = hash(item)
+		item_num = item_num+1
+
+	return connectList(word_list)
+
 # Function to search a string for names and replace them with hashed versions of those names
 def searchAndReplace(string):
 	word_list = splitString(string)
@@ -25,7 +40,8 @@ def searchAndReplace(string):
 	item_num = 0
 	for item in word_list:
 		#print item	
-		if str(item).lower() in names:
+		item = str(item).lower()
+		if trie.searchDec(item):
 			#print item
 			word_list[item_num] = hash(item)
 		item_num = item_num+1
@@ -57,8 +73,12 @@ with open('Database_of_Last_Names.csv', 'rU') as csvfile:
 
 # Convert names to lowercase
 names = [str(name[0]).lower() for name in names]
-#print names
+# Create and add names to Trie Database
+trie = TrieDatabase()
+trie.addList(names)
 
-
+# Create example string
 example_string = "hello bob, how is esther doing today?"
+
+# Search and replace all names in the string with the hashed version of that name
 print searchAndReplace(example_string)

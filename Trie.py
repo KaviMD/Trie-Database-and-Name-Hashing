@@ -1,18 +1,19 @@
 import re
 
 # Trie Database Class
-class Trie(object):
+class TrieDatabase(object):
 
 	# Initizilation Method
 	def __init__(self):
 		self.test = ''
 		self.start_char = '#'
 		self.end_char = '#'
-		self.root = Node(self.start_char,False)
+		self.root = Node(self.start_char, False)
 
 	# Method to add a word to the Trie
 	def addWord(self, word):
 		cleaned = self.cleanup(word)
+		#print cleaned
 		#cleanup word
 		master = self.root
 		char_num = 0
@@ -52,11 +53,16 @@ class Trie(object):
 
 			char_num = char_num+1
 
+		#loop through each character in word, check if node already exists
+			#yes: increment times node added, go on to next character
+			#no: create node with character, times used 1, only end of word if last character
+
+
 	# Method to add a list of words to the Trie
 	def addList(self, word_list):
 		#print word_list
 		for i in range(0, len(word_list)):
-			self.addWord(word_list[i][0]) 
+			self.addWord(word_list[i]) 
 
 	##################################################################
 	### Unimplemented Methods to remove a word,                    ###
@@ -112,7 +118,8 @@ class Trie(object):
 
 	# Method to print out the whole Trie Database
 	def display(self):
-		print self.recur(0,self.root)
+		self.recur(0,self.root)
+
 
 	# Method to loop through the full Trie database
 	def recur(self,level,base):
@@ -127,6 +134,7 @@ class Trie(object):
 	def cleanup(self,word):
 		word = word.lower()
 		word = re.sub('[^A-Za-z0-9 ]+', '', word)
+		#print word
 		return word
 		
 # Node class for Trie Database
