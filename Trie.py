@@ -111,10 +111,20 @@ class TrieDatabase(object):
 			#char_num = char_num+1
 		return True
 
-	# Will be a method to recursively search the Trie
-	def searchRec(self, word, base, letter_num):
+	# Method to recursively search the Trie
+	def searchRec(self,word):
+		return self.searchRecur(word, self.root, 0)
+
+	def searchRecur(self, word, base,letter_num):
+		returnVal = False
 		if letter_num == len(word):
 			return True
+		for i in range(0, len(base.children)):
+			returnVal = self.searchRecur(word, base.children[i], letter_num+1)
+			if returnVal:
+				break
+
+		return returnVal
 
 	# Method to print out the whole Trie Database
 	def display(self):
