@@ -41,7 +41,7 @@ def searchAndReplaceSlow(string):
 	return connectList(word_list)
 
 # Function to search a string for names and replace them with hashed versions of those names
-def searchAndReplaceINDEV(string, database):
+def searchAndReplace(string, database):
 	word_list = splitString(string)
 
 	for i in range(0, len(word_list)):
@@ -89,3 +89,16 @@ example_string = "Hello, bob, how is esther doing today?"
 # Search and replace all names in the string with the hashed version of that name
 print searchAndReplaceSlow(example_string)
 print searchAndReplace(example_string, trie)
+
+
+import time
+start = time.time()
+print searchAndReplaceSlow(example_string)
+end = time.time()
+print(end - start)
+
+
+start = time.time()
+print searchAndReplace(example_string, trie)
+end = time.time()
+print(end - start)
