@@ -27,7 +27,7 @@ def connectList(words):
 	return string[:-1]
 
 # !!!SLOW!!! Function to search a string for names and replace them with hashed versions of those names
-def searchAndReplace(string):
+def searchAndReplaceSlow(string):
 	word_list = splitString(string)
 
 	item_num = 0
@@ -40,14 +40,14 @@ def searchAndReplace(string):
 
 	return connectList(word_list)
 
-# !!! IN DEVELOPMENT !!! Function to search a string for names and replace them with hashed versions of those names
+# Function to search a string for names and replace them with hashed versions of those names
 def searchAndReplaceINDEV(string, database):
 	word_list = splitString(string)
 
 	for i in range(0, len(word_list)):
 		word = cleanup(word_list[i])
 
-		if database.searchRec(word):
+		if database.searchDec(word):
 			#print True
 			word_list[i] = hash(word)
 		#else:
@@ -87,4 +87,5 @@ trie.addList(names)
 example_string = "Hello, bob, how is esther doing today?"
 
 # Search and replace all names in the string with the hashed version of that name
-print searchAndReplace(example_string)
+print searchAndReplaceSlow(example_string)
+print searchAndReplace(example_string, trie)
