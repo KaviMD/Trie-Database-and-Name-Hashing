@@ -6,57 +6,32 @@ class TrieDatabase(object):
 	# Initizilation Method
 	def __init__(self):
 		self.test = ''
-		self.start_char = '#'
-		self.end_char = '#'
+		self.start_char = '{'
+		self.end_char = '}'
 		self.root = Node(self.start_char, False)
 
 	# Method to add a word to the Trie
 	def addWord(self, word):
 		cleaned = self.cleanup(word)
-		#print cleaned
-		#cleanup word
+		if cleaned == '':
+			return 'The string \'%s\' is empty after extra characters are removed. It will not be added' % (word)
+
 		master = self.root
-		char_num = 0
-		#print len(cleaned)
+
 		for char in cleaned:
-			#print char
-			#print char_num
-			if char_num >= len(cleaned)-1:
-				endNode = Node(char,False)
-				endNode.children.append(Node(self.end_char, True))
-				master.children.append(endNode)
-				#print 'created new node, final character'
-				break
 
-			#print 'not breaking'
-			#print len(master.children)
-
-			if len(master.children) == 0:
+			position = ord(char)-97
+			child_num = master.node_locations[position]
+			
+			if child_num >= 0:
+				master = master.children[child_num]
+			else:
 				master.children.append(Node(char,False))
+				master.node_locations[position] = len(master.children)-1
 				master = master.children[len(master.children)-1]
-				#print 'creating first node in children'
 
-			#print len(master.children)
-			for i in range(0, len(master.children)):
-				#print i
-				if master.children[i].char == char:
-					master.children[i].times = master.children[i].times + 1
-					master = master.children[i]
-					#print 'entering next level, node already exists'
-					break
-
-				elif i >= len(master.children)-1:
-					master.children.append(Node(char,False))
-					master = master.children[i+1]
-					#print 'created new node, entering next level'
-					break
-
-			char_num = char_num+1
-
-		#loop through each character in word, check if node already exists
-			#yes: increment times node added, go on to next character
-			#no: create node with character, times used 1, only end of word if last character
-
+		master.children.append(Node(self.end_char, True))
+		master.node_locations[ord(self.end_char)-97] = len(master.children)-1	
 
 	# Method to add a list of words to the Trie
 	def addList(self, word_list):
@@ -68,6 +43,7 @@ class TrieDatabase(object):
 	### Unimplemented Methods to remove a word,                    ###
 	### a list of words, or save/load the Trie to/from a JSON file ###
 	##################################################################
+
 	'''
 	def remove(self):
 		pass
@@ -85,33 +61,24 @@ class TrieDatabase(object):
 	# Method to search the Trie
 	def searchDec(self, word):
 		master = self.root
-		char_num = 0
+
+		word = self.cleanup(word)
+		if word == '':
+			return False
+
 		for char in word:
-			#print 'char'
-			#print char
-			#if char_num >= len(word)-1:
-			#	return True
-			node_num = 0
-			#print len(master.children)
-			for node in master.children:
-				#print 'node.char'
-				#print node.char
-				#print node_num
+			location = master.node_locations[ord(char)-97]
+			if location >= 0:
+				master = master.children[location]
+			else:
+				return False
 
-				if node_num >= len(master.children)-1:
-					return False
+		if master.node_locations[ord(self.end_char)-97] < 0:
+			return False
 
-				if node.char == char:
-					master = node
-					#print 'entering next level'
-					break
-
-				node_num = node_num+1
-
-			#char_num = char_num+1
 		return True
 
-	# Method to recursively search the Trie
+	# !!! SLOW !!! Method to recursively search the Trie
 	def searchRec(self,word):
 		return self.searchRecur(word, self.root, 0)
 
@@ -128,11 +95,10 @@ class TrieDatabase(object):
 
 	# Method to print out the whole Trie Database
 	def display(self):
-		self.recur(0,self.root)
+		print self.recur(0,self.root)
 
-
-	# Method to loop through the full Trie database
 	def recur(self,level,base):
+
 		if len(base.children) < 1:
 			print ('\t'*level)+base.char
 		else:
@@ -151,6 +117,7 @@ class TrieDatabase(object):
 class Node(object):
 	def __init__(self, char, end):
 		self.char = char
+		self.node_locations = [-1]*29
 		self.children = []
 		self.end = end
 		self.times = 0

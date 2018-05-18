@@ -4,6 +4,13 @@ import csv
 import re
 from Trie import TrieDatabase
 
+# Function to clean up a word
+def cleanup(word):
+	word = word.lower()
+	word = re.sub('[^A-Za-z0-9 ]+', '', word)
+	#print word
+	return word
+
 # Function to hash a string
 def hash(string):
 	hash_object = hashlib.md5(string)
@@ -20,7 +27,7 @@ def connectList(words):
 	return string[:-1]
 
 # !!!SLOW!!! Function to search a string for names and replace them with hashed versions of those names
-def searchAndReplaceSlow(string):
+def searchAndReplace(string):
 	word_list = splitString(string)
 
 	item_num = 0
@@ -33,21 +40,19 @@ def searchAndReplaceSlow(string):
 
 	return connectList(word_list)
 
-# Function to search a string for names and replace them with hashed versions of those names
-def searchAndReplace(string):
+# !!! IN DEVELOPMENT !!! Function to search a string for names and replace them with hashed versions of those names
+def searchAndReplaceINDEV(string, database):
 	word_list = splitString(string)
 
-	item_num = 0
-	for item in word_list:
-		#print item	
-		item = str(item).lower()
-		if trie.searchDec(item):
-			#print item
-			word_list[item_num] = hash(item)
-		item_num = item_num+1
+	for i in range(0, len(word_list)):
+		word = cleanup(word_list[i])
 
+		if database.searchRec(word):
+			#print True
+			word_list[i] = hash(word)
+		#else:
+			#print False
 	return connectList(word_list)
-
 
 # Create a list to store all of the names
 names = []
@@ -76,9 +81,10 @@ names = [str(name[0]).lower() for name in names]
 # Create and add names to Trie Database
 trie = TrieDatabase()
 trie.addList(names)
+#trie.display()
 
 # Create example string
-example_string = "hello bob, how is esther doing today?"
+example_string = "Hello, bob, how is esther doing today?"
 
 # Search and replace all names in the string with the hashed version of that name
 print searchAndReplace(example_string)
